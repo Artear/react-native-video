@@ -1778,4 +1778,14 @@ static int const RCTVideoUnset = -1;
 }
 #endif
 
+- (dispatch_queue_t)methodQueue
+{
+    return dispatch_get_main_queue();
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+    return YES;
+}
+
 @end
