@@ -58,6 +58,7 @@ public class MainActivity extends ReactActivity {
 +       intent.putExtra("newConfig", newConfig);
 +       this.sendBroadcast(intent);
 +   }
+
 }
 ```
 
