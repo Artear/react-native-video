@@ -41,7 +41,7 @@ Add the following code to the **android/app/src/main/AndroidManifest.xml** file:
       </activity>
 ```
 
-Implement the **onConfigurationChanged** method (in the **MainActivity.java** file)
+Implement the **onConfigurationChanged** method in the **MainActivity.java** file:
 
 ```diff
 +import android.content.Intent;
