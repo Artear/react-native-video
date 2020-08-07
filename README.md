@@ -69,8 +69,6 @@ Add following to MainApplication.java
 +     packages.add(new OrientationPackage());
       return packages;
     }
-
-//...
 ```
 
 ## Sample React Native code
