@@ -2,7 +2,7 @@
 
 React Native Video package updated in order to provide ads. The following properties were added:
 
-* **adTagUrl** (String): The doubleclick.net URL goes in this property.
+* **adTagUrl** (String): Set the doubleclick.net URL in this property.
 
 * **forceLandscapeOnStart** (Boolean): To force landscape when the video player starts.
 
