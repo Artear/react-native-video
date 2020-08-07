@@ -60,23 +60,6 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-Add following to the **MainApplication.java** file (This will be added automatically by auto link. If not, please manually add the following)
-
-```diff
-+import org.wonday.orientation.OrientationPackage;
-+import org.wonday.orientation.OrientationActivityLifecycle;
-
-    @Override
-    protected List<ReactPackage> getPackages() {
-      @SuppressWarnings("UnnecessaryLocalVariable")
-      List<ReactPackage> packages = new PackageList(this).getPackages();
-      // Packages that cannot be autolinked yet can be added manually here, for example:
-      // packages.add(new MyReactNativePackage());
-+     packages.add(new OrientationPackage());
-      return packages;
-    }
-```
-
 ## Sample React Native code
 
 ```javascript
