@@ -55,10 +55,4 @@
 - (AVPlayerViewController*)createPlayerViewController:(AVPlayer*)player withPlayerItem:(AVPlayerItem*)playerItem;
 
 - (void)save:(NSDictionary *)options resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject;
-
-#if (!TARGET_OS_TV)
-+ (void)setOrientation: (UIInterfaceOrientationMask)orientation;
-+ (UIInterfaceOrientationMask)getOrientation;
-#endif
-
 @end
