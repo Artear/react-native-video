@@ -4,7 +4,7 @@ React Native Video package updated in order to provide ads. The following proper
 
 * **adTagUrl** (String): The doubleclick.net URL goes in this property.
 
-* **forceLandscapeOnStart** (Boolean): To force landscape when the video starts playing.
+* **forceLandscapeOnStart** (Boolean): To force landscape when the video player starts.
 
 * **forcePortraitOnClose** (Boolean): To force portrait when the video player is closed.
 
