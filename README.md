@@ -1,13 +1,13 @@
 ## react-native-video with ads
 
-## Installing react-native-orientation-locker and react-native-video with ads
+## Installing
 
 ```
 yarn add react-native-orientation-locker
 yarn add yarn add https://github.com/Artear/react-native-video.git
 ```
 
-## Implementing react-native-orientation-locker
+## Configuring
 
 #### iOS
 
@@ -82,12 +82,6 @@ Add following to MainApplication.java
       return packages;
     }
 //...
-
-  @Override
-  public void onCreate() {
-    ...
-+    registerActivityLifecycleCallbacks(OrientationActivityLifecycle.getInstance());
-  }
 ```
 
 ## Usage
