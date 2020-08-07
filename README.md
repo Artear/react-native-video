@@ -60,7 +60,7 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-## Sample React Native code
+## React Native sample code
 
 ```javascript
 
