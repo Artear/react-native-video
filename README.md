@@ -27,8 +27,6 @@ Add the following to your project's **AppDelegate.m** file:
 +- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
 +  return [Orientation getOrientation];
 +}
-
-@end
 ```
 
 #### Android
