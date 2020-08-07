@@ -2,11 +2,11 @@
 
 React Native Video package updated in order to show ads during playback and handle the device orientation. The following properties were added to the ```<Video />``` component:
 
-* **adTagUrl** (String): Set the doubleclick.net URL in this property.
+* **adTagUrl** (Optional String): Set the doubleclick.net URL in this property.
 
-* **forceLandscapeOnStart** (Boolean): To force landscape when the video player starts.
+* **forceLandscapeOnStart** (Optional Boolean): To force landscape when the video player starts. Default value: **false**.
 
-* **forcePortraitOnClose** (Boolean): To force portrait when the video player is closed.
+* **forcePortraitOnClose** (Optional Boolean): To force portrait when the video player is closed. Default value: **false**.
 
 ## Installing
 
