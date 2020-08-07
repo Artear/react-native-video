@@ -12,7 +12,7 @@ React Native Video package updated in order to show ads during playback and hand
 
 ```
 yarn add react-native-orientation-locker
-yarn add yarn add https://github.com/Artear/react-native-video.git
+yarn add https://github.com/Artear/react-native-video.git
 ```
 
 ## Configuring
