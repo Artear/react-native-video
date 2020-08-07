@@ -1,5 +1,13 @@
 ## react-native-video with ads
 
+React Native Video package updated in order to provide ads. The following properties were added:
+
+* **adTagUrl** (String): The doubleclick.net URL goes in this property.
+
+* **forceLandscapeOnStart** (Boolean): To force landscape when the video starts playing.
+
+* **forcePortraitOnClose** (Boolean): To force portrait when the video player is closed.
+
 ## Installing
 
 ```
