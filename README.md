@@ -16,10 +16,6 @@ Add the following to your project's `AppDelegate.m`:
 ```diff
 +#import "Orientation.h"
 
-@implementation AppDelegate
-
-// ...
-
 +- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
 +  return [Orientation getOrientation];
 +}
@@ -36,18 +32,12 @@ Add following to android/app/src/main/AndroidManifest.xml
         ....
 +       android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
         android:windowSoftInputMode="adjustResize">
-
-          ....
-
       </activity>
-
 ```
 
 Implement onConfigurationChanged method (in `MainActivity.java`)
 
 ```diff
-// ...
-
 +import android.content.Intent;
 +import android.content.res.Configuration;
 
@@ -60,8 +50,6 @@ public class MainActivity extends ReactActivity {
 +       intent.putExtra("newConfig", newConfig);
 +       this.sendBroadcast(intent);
 +   }
-
-    // ......
 }
 ```
 
@@ -69,18 +57,19 @@ Add following to MainApplication.java
 (This will be added automatically by auto link. If not, please manually add the following )
 
 ```diff
-//...
 +import org.wonday.orientation.OrientationPackage;
 +import org.wonday.orientation.OrientationActivityLifecycle;
+
     @Override
     protected List<ReactPackage> getPackages() {
       @SuppressWarnings("UnnecessaryLocalVariable")
       List<ReactPackage> packages = new PackageList(this).getPackages();
       // Packages that cannot be autolinked yet can be added manually here, for example:
       // packages.add(new MyReactNativePackage());
-+      packages.add(new OrientationPackage());
++     packages.add(new OrientationPackage());
       return packages;
     }
+
 //...
 ```
 
