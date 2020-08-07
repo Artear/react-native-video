@@ -84,7 +84,7 @@ Add following to MainApplication.java
 //...
 ```
 
-## Usage
+## Sample React Native code
 
 ```javascript
 
