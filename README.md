@@ -19,7 +19,7 @@ yarn add yarn add https://github.com/Artear/react-native-video.git
 
 #### iOS
 
-Add the following to your project's **AppDelegate.m** file:
+Add the following code to your project's **AppDelegate.m** file:
 
 ```diff
 +#import "Orientation.h"
@@ -31,7 +31,7 @@ Add the following to your project's **AppDelegate.m** file:
 
 #### Android
 
-Add following to the **android/app/src/main/AndroidManifest.xml** file:
+Add the following code to the **android/app/src/main/AndroidManifest.xml** file:
 
 ```diff
       <activity
@@ -41,7 +41,7 @@ Add following to the **android/app/src/main/AndroidManifest.xml** file:
       </activity>
 ```
 
-Implement **onConfigurationChanged** method (in the **MainActivity.java** file)
+Implement the **onConfigurationChanged** method (in the **MainActivity.java** file)
 
 ```diff
 +import android.content.Intent;
