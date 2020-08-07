@@ -19,7 +19,7 @@ yarn add yarn add https://github.com/Artear/react-native-video.git
 
 #### iOS
 
-Add the following to your project's **AppDelegate.m**:
+Add the following to your project's **AppDelegate.m** file:
 
 ```diff
 +#import "Orientation.h"
@@ -33,7 +33,7 @@ Add the following to your project's **AppDelegate.m**:
 
 #### Android
 
-Add following to **android/app/src/main/AndroidManifest.xml**
+Add following to the **android/app/src/main/AndroidManifest.xml** file:
 
 ```diff
       <activity
@@ -43,7 +43,7 @@ Add following to **android/app/src/main/AndroidManifest.xml**
       </activity>
 ```
 
-Implement **onConfigurationChanged** method (in **MainActivity.java**)
+Implement **onConfigurationChanged** method (in the **MainActivity.java** file)
 
 ```diff
 +import android.content.Intent;
@@ -62,8 +62,7 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
-Add following to **MainApplication.java**
-(This will be added automatically by auto link. If not, please manually add the following)
+Add following to the **MainApplication.java** file (This will be added automatically by auto link. If not, please manually add the following)
 
 ```diff
 +import org.wonday.orientation.OrientationPackage;
