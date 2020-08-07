@@ -26,6 +26,8 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
     private static final String PROP_SRC = "src";
     private static final String PROP_SRC_URI = "uri";
     private static final String PROP_AD_TAG_URL = "adTagUrl";
+    private static final String PROP_FORCE_LANDSCAPE_ON_START = "forceLandscapeOnStart";
+    private static final String PROP_FORCE_PORTRAIT_ON_CLOSE = "forcePortraitOnClose";
     private static final String PROP_SRC_TYPE = "type";
     private static final String PROP_SRC_HEADERS = "requestHeaders";
     private static final String PROP_RESIZE_MODE = "resizeMode";
@@ -156,6 +158,16 @@ public class ReactExoplayerViewManager extends ViewGroupManager<ReactExoplayerVi
             }
         }
         return;
+    }
+
+    @ReactProp(name = PROP_FORCE_LANDSCAPE_ON_START, defaultBoolean = false)
+    public void setForceLandscapeOnStart(final ReactExoplayerView videoView, final boolean forceLandscapeOnStartEnabled) {
+        videoView.setForceLandscapeOnStart(forceLandscapeOnStartEnabled);
+    }
+
+    @ReactProp(name = PROP_FORCE_PORTRAIT_ON_CLOSE, defaultBoolean = false)
+    public void setForcePortraitOnClose(final ReactExoplayerView videoView, final boolean forcePortraitOnCloseEnabled) {
+        videoView.setForcePortraitOnClose(forcePortraitOnCloseEnabled);
     }
 
     @ReactProp(name = PROP_RESIZE_MODE)

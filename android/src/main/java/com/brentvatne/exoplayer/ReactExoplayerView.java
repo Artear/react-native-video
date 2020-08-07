@@ -3,6 +3,7 @@ package com.brentvatne.exoplayer;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
@@ -11,6 +12,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.accessibility.CaptioningManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -148,6 +150,8 @@ class ReactExoplayerView extends FrameLayout implements
     private boolean mReportBandwidth = false;
     private boolean controls;
     private Uri adTagUrl;
+    private boolean forceLandscapeOnStart = false;
+    private boolean forcePortraitOnClose = false;
     // \ End props
 
     // React
@@ -215,6 +219,7 @@ class ReactExoplayerView extends FrameLayout implements
     }
 
     private void createViews() {
+
         clearResumePosition();
         mediaDataSourceFactory = buildDataSourceFactory(true);
         if (CookieHandler.getDefault() != DEFAULT_COOKIE_MANAGER) {
@@ -234,6 +239,11 @@ class ReactExoplayerView extends FrameLayout implements
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         initializePlayer();
+
+        if (forceLandscapeOnStart==true)  {
+            themedReactContext.getCurrentActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            themedReactContext.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
     }
 
     @Override
@@ -243,6 +253,11 @@ class ReactExoplayerView extends FrameLayout implements
          * Leave this here in case it causes issues.
          */
         // stopPlayback();
+
+        themedReactContext.getCurrentActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        if (forcePortraitOnClose==true)  {
+            themedReactContext.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
     }
 
     // LifecycleEventListener implementation
@@ -989,6 +1004,14 @@ class ReactExoplayerView extends FrameLayout implements
     public void setAdTagUrl(final Uri uri) {
         adTagUrl = uri;
         adsLoader = new ImaAdsLoader(this.themedReactContext, adTagUrl);
+    }
+
+    public void setForceLandscapeOnStart(final Boolean forceLandscapeOnStartEnabled) {
+        forceLandscapeOnStart = forceLandscapeOnStartEnabled;
+    }
+
+    public void setForcePortraitOnClose(final Boolean forcePortraitOnCloseEnabled) {
+        forcePortraitOnClose = forcePortraitOnCloseEnabled;
     }
 
     public void setRawSrc(final Uri uri, final String extension) {
