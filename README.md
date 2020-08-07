@@ -1,6 +1,6 @@
 ## react-native-video with ads
 
-React Native Video package updated in order to provide ads and handle the device orientation during playblack. The following properties were added to the **<Video \/>** component:
+React Native Video package updated in order to provide ads and handle the device orientation during playblack. The following properties were added to the ```<Video />``` component:
 
 * **adTagUrl** (String): Set the doubleclick.net URL in this property.
 
