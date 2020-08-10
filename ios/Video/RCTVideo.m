@@ -802,6 +802,10 @@ static int const RCTVideoUnset = -1;
   if (event.type == kIMAAdEvent_LOADED) {
     // When the SDK notifies us that ads have been loaded, play them.
     [adsManager start];
+    self.superview.layer.zPosition = 999;
+  }
+  else if (event.type == kIMAAdEvent_COMPLETE) {
+    self.superview.layer.zPosition = 0;
   }
 }
 
