@@ -82,6 +82,7 @@ static int const RCTVideoUnset = -1;
   BOOL _forceLandscapeOnStart;
   BOOL _forcePortraitOnClose;
   BOOL _filterEnabled;
+  BOOL playingAd;
   UIViewController * _presentingViewController;
 #if __has_include(<react-native-video/RCTVideoCache.h>)
   RCTVideoCache * _videoCache;
@@ -801,11 +802,14 @@ static int const RCTVideoUnset = -1;
 - (void)adsManager:(IMAAdsManager *)adsManager didReceiveAdEvent:(IMAAdEvent *)event {
   if (event.type == kIMAAdEvent_LOADED) {
     // When the SDK notifies us that ads have been loaded, play them.
-    [adsManager start];
-    self.superview.layer.zPosition = 999;
+    if (_playerViewController!=nil)
+      {
+      [adsManager start];
+      playingAd = true;
+      }
   }
-  else if (event.type == kIMAAdEvent_COMPLETE) {
-    self.superview.layer.zPosition = 0;
+  if (event.type == kIMAAdEvent_COMPLETE) {
+    playingAd = false;
   }
 }
 
@@ -1009,13 +1013,15 @@ static int const RCTVideoUnset = -1;
       [session setCategory:session.category withOptions:options error:nil];
     }
 
-    if (@available(iOS 10.0, *) && !_automaticallyWaitsToMinimizeStalling) {
-      [_player playImmediatelyAtRate:_rate];
-    } else {
-      [_player play];
-      [_player setRate:_rate];
-    }
-    [_player setRate:_rate];
+    if (playingAd==true)
+        {
+        [_adsManager resume];
+        }
+    else
+        {
+        [_player play];
+        [_player setRate:_rate];
+        }
   }
   
   _paused = paused;
@@ -1660,6 +1666,8 @@ static int const RCTVideoUnset = -1;
 - (void)removeFromSuperview
 {
   [_player pause];
+  [_adsManager pause];
+  [_adsManager destroy];
   if (_playbackRateObserverRegistered) {
     [_player removeObserver:self forKeyPath:playbackRate context:nil];
     _playbackRateObserverRegistered = NO;
