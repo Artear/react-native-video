@@ -10,6 +10,16 @@ React Native Video package updated in order to show ads with the following prope
 yarn add https://github.com/Artear/react-native-video.git
 ```
 
+## iOS
+
+For iOS you will have to add the [Google Mobile Ads SDK](https://developers.google.com/admob/ios/quick-start#import_the_mobile_ads_sdk) to your Xcode project.
+
+## Android
+
+On Android the AdMob library code is part of Play Services, which is automatically added when this library is linked.
+
+But you still have to manually update your AndroidManifest.xml, as described in the [Google Mobile Ads SDK documentation](https://developers.google.com/admob/android/quick-start#update_your_androidmanifestxml).
+
 ## React Native sample code
 
 ```javascript
