@@ -150,8 +150,6 @@ class ReactExoplayerView extends FrameLayout implements
     private boolean mReportBandwidth = false;
     private boolean controls;
     private Uri adTagUrl;
-    private boolean forceLandscapeOnStart = false;
-    private boolean forcePortraitOnClose = false;
     // \ End props
 
     // React
@@ -239,11 +237,6 @@ class ReactExoplayerView extends FrameLayout implements
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         initializePlayer();
-
-        if (forceLandscapeOnStart==true)  {
-            themedReactContext.getCurrentActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            themedReactContext.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        }
     }
 
     @Override
@@ -255,9 +248,6 @@ class ReactExoplayerView extends FrameLayout implements
         // stopPlayback();
 
         themedReactContext.getCurrentActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (forcePortraitOnClose==true)  {
-            themedReactContext.getCurrentActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        }
     }
 
     // LifecycleEventListener implementation
@@ -1004,14 +994,6 @@ class ReactExoplayerView extends FrameLayout implements
     public void setAdTagUrl(final Uri uri) {
         adTagUrl = uri;
         adsLoader = new ImaAdsLoader(this.themedReactContext, adTagUrl);
-    }
-
-    public void setForceLandscapeOnStart(final Boolean forceLandscapeOnStartEnabled) {
-        forceLandscapeOnStart = forceLandscapeOnStartEnabled;
-    }
-
-    public void setForcePortraitOnClose(final Boolean forcePortraitOnCloseEnabled) {
-        forcePortraitOnClose = forcePortraitOnCloseEnabled;
     }
 
     public void setRawSrc(final Uri uri, final String extension) {
