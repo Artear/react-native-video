@@ -1,6 +1,5 @@
 #import <React/RCTConvert.h>
 #import "RCTVideo.h"
-#import "Orientation.h"
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventDispatcher.h>
 #import <React/UIView+React.h>
@@ -79,8 +78,6 @@ static int const RCTVideoUnset = -1;
   BOOL _fullscreenPlayerPresented;
   NSString *_filterName;
   NSString * _adTagUrl;
-  BOOL _forceLandscapeOnStart;
-  BOOL _forcePortraitOnClose;
   BOOL _filterEnabled;
   BOOL playingAd;
   UIViewController * _presentingViewController;
@@ -121,8 +118,6 @@ static int const RCTVideoUnset = -1;
     _isRequestAds = false;
     _ignoreSilentSwitch = @"inherit"; // inherit, ignore, obey
     _mixWithOthers = @"inherit"; // inherit, mix, duck
-    _forceLandscapeOnStart = false;
-    _forcePortraitOnClose = false;
 #if TARGET_OS_IOS
     _restoreUserInterfaceForPIPStopCompletionHandler = NULL;
 #endif
@@ -164,12 +159,6 @@ static int const RCTVideoUnset = -1;
     
     viewController.view.frame = self.bounds;
     viewController.player = player;
-    if (_forceLandscapeOnStart) {
-        [Orientation setOrientation:UIInterfaceOrientationMaskLandscape];
-        [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationLandscapeRight] forKey:@"orientation"];
-        [UIViewController attemptRotationToDeviceOrientation];
-        [Orientation setOrientation:UIInterfaceOrientationMaskLandscape];
-    }
     return viewController;
 }
 
@@ -1595,15 +1584,6 @@ static int const RCTVideoUnset = -1;
   _adTagUrl = adTagUrl;
 }
 
-- (void)setForceLandscapeOnStart:(BOOL)forceLandscapeOnStartEnabled {
-  _forceLandscapeOnStart = forceLandscapeOnStartEnabled;
-}
-
-- (void)setForcePortraitOnClose:(BOOL)forcePortraitOnCloseEnabled {
-  _forcePortraitOnClose = forcePortraitOnCloseEnabled;
-}
-
-
 #pragma mark - React View Management
 
 - (void)insertReactSubview:(UIView *)view atIndex:(NSInteger)atIndex
@@ -1686,13 +1666,6 @@ static int const RCTVideoUnset = -1;
   _playerViewController.rctDelegate = nil;
   _playerViewController.player = nil;
   _playerViewController = nil;
-  
-    if (_forcePortraitOnClose){
-        [Orientation setOrientation:UIInterfaceOrientationMaskPortrait];
-        [[UIDevice currentDevice] setValue:[NSNumber numberWithInteger: UIInterfaceOrientationPortrait] forKey:@"orientation"];
-        [UIViewController attemptRotationToDeviceOrientation];
-        [Orientation setOrientation:UIInterfaceOrientationMaskPortrait];
-    }
   
   [self removePlayerTimeObserver];
   [self removePlayerItemObservers];
