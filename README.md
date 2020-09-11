@@ -1,6 +1,6 @@
 ## react-native-video with ads
 
-React Native Video package updated in order to show ads with the following property:
+React Native Video package updated in order to show ads using the following property:
 
 * **adTagUrl** (Optional String): Set the doubleclick.net URL in this property.
 
