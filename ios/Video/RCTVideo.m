@@ -794,10 +794,12 @@ static int const RCTVideoUnset = -1;
     if (_playerViewController!=nil)
       {
       [adsManager start];
+      self.onAdStart(@{});
       playingAd = true;
       }
   }
   if (event.type == kIMAAdEvent_COMPLETE) {
+    self.onAdComplete(@{});
     playingAd = false;
   }
 }
