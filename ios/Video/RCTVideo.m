@@ -783,6 +783,9 @@ static int const RCTVideoUnset = -1;
 - (void)adsLoader:(IMAAdsLoader *)loader failedWithErrorData:(IMAAdLoadingErrorData *)adErrorData {
   // Something went wrong loading ads. Log the error and play the content.
   NSLog(@"Error loading ads: %@", adErrorData.adError.message);
+  if (self.onAdComplete) {
+    self.onAdComplete(@{});
+  }
   [_player play];
 }
 
@@ -794,12 +797,13 @@ static int const RCTVideoUnset = -1;
     if (_playerViewController!=nil)
       {
       [adsManager start];
-      self.onAdStart(@{});
+      if (self.onAdStart) {
+        self.onAdStart(@{});
+      }
       playingAd = true;
       }
   }
   if (event.type == kIMAAdEvent_COMPLETE) {
-    self.onAdComplete(@{});
     playingAd = false;
   }
 }
@@ -808,7 +812,10 @@ static int const RCTVideoUnset = -1;
   // Something went wrong with the ads manager after ads were loaded. Log the error and play the
   // content.
   NSLog(@"AdsManager error: %@", error.message);
-  [_player play];
+    if (self.onAdComplete) {
+      self.onAdComplete(@{});
+    }
+    [_player play];
 }
 
 - (void)adsManagerDidRequestContentPause:(IMAAdsManager *)adsManager {
@@ -818,6 +825,9 @@ static int const RCTVideoUnset = -1;
 
 - (void)adsManagerDidRequestContentResume:(IMAAdsManager *)adsManager {
   // The SDK is done playing ads (at least for now), so resume the content.
+  if (self.onAdComplete) {
+    self.onAdComplete(@{});
+  }
   [_player play];
 }
 
