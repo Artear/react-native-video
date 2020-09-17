@@ -28,6 +28,10 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.google.ads.interactivemedia.v3.api.AdEvent;
+import com.google.ads.interactivemedia.v3.api.AdsLoader;
+import com.google.ads.interactivemedia.v3.api.AdsManager;
+import com.google.ads.interactivemedia.v3.api.AdsManagerLoadedEvent;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
@@ -106,6 +110,7 @@ class ReactExoplayerView extends FrameLayout implements
 
     private ExoPlayerView exoPlayerView;
     private ImaAdsLoader adsLoader;
+    private AdsManager adsManager;
 
     private DataSource.Factory mediaDataSourceFactory;
     private SimpleExoPlayer player;
@@ -994,6 +999,37 @@ class ReactExoplayerView extends FrameLayout implements
     public void setAdTagUrl(final Uri uri) {
         adTagUrl = uri;
         adsLoader = new ImaAdsLoader(this.themedReactContext, adTagUrl);
+        adsLoader.getAdsLoader().addAdsLoadedListener(new AdsLoader.AdsLoadedListener() {
+            @Override public void onAdsManagerLoaded(AdsManagerLoadedEvent adsManagerLoadedEvent) {
+                adsManager = adsManagerLoadedEvent.getAdsManager();
+                adsManager.addAdEventListener(new AdEvent.AdEventListener() {
+                    @Override
+                    public void onAdEvent(AdEvent adEvent) {
+                        switch (adEvent.getType()) {
+                            case CONTENT_PAUSE_REQUESTED:
+                            eventEmitter.adStart();
+                            break;
+
+                            case AD_BREAK_FETCH_ERROR:
+                            eventEmitter.adError();
+                            break;
+
+                            case PAUSED:
+                            eventEmitter.adPause();
+                            break;
+
+                            case SKIPPED:
+                            eventEmitter.adSkip();
+                            break;
+
+                            case CONTENT_RESUME_REQUESTED:
+                            eventEmitter.adComplete();
+                            break;
+                        }
+                    }
+                });
+            };
+        });
     }
 
     public void setRawSrc(final Uri uri, final String extension) {
