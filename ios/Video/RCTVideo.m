@@ -802,9 +802,16 @@ static int const RCTVideoUnset = -1;
       }
       playingAd = true;
       }
-  }
-  if (event.type == kIMAAdEvent_COMPLETE) {
+  } else if (event.type == kIMAAdEvent_COMPLETE) {
     playingAd = false;
+  } else if (event.type == kIMAAdEvent_SKIPPED) {
+    if (self.onAdSkip) {
+      self.onAdSkip(@{});
+      }
+  } else if (event.type == kIMAAdEvent_PAUSE) {
+    if (self.onAdPause) {
+      self.onAdPause(@{});
+    }
   }
 }
 
@@ -812,6 +819,9 @@ static int const RCTVideoUnset = -1;
   // Something went wrong with the ads manager after ads were loaded. Log the error and play the
   // content.
   NSLog(@"AdsManager error: %@", error.message);
+    if (self.onAdError) {
+      self.onAdError(@{});
+    }
     if (self.onAdComplete) {
       self.onAdComplete(@{});
     }

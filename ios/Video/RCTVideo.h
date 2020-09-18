@@ -45,6 +45,9 @@
 @property (nonatomic, copy) RCTDirectEventBlock onRestoreUserInterfaceForPictureInPictureStop;
 @property (nonatomic, copy) RCTDirectEventBlock onAdStart;
 @property (nonatomic, copy) RCTDirectEventBlock onAdComplete;
+@property (nonatomic, copy) RCTDirectEventBlock onAdError;
+@property (nonatomic, copy) RCTDirectEventBlock onAdPause;
+@property (nonatomic, copy) RCTDirectEventBlock onAdSkip;
 /// Playhead used by the SDK to track content video progress and insert mid-rolls.
 @property(nonatomic, strong) IMAAVPlayerContentPlayhead *contentPlayhead;
 /// Entry point for the SDK. Used to make ad requests.
