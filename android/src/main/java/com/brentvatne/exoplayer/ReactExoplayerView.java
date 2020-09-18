@@ -1006,7 +1006,7 @@ class ReactExoplayerView extends FrameLayout implements
                     @Override
                     public void onAdEvent(AdEvent adEvent) {
                         switch (adEvent.getType()) {
-                            case CONTENT_PAUSE_REQUESTED:
+                            case AD_BREAK_STARTED:
                             eventEmitter.adStart();
                             break;
 
@@ -1020,6 +1020,10 @@ class ReactExoplayerView extends FrameLayout implements
 
                             case SKIPPED:
                             eventEmitter.adSkip();
+                            break;
+
+                            case CONTENT_PAUSE_REQUESTED:
+                            eventEmitter.adStart();
                             break;
 
                             case CONTENT_RESUME_REQUESTED:
