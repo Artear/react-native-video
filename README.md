@@ -3,6 +3,11 @@
 React Native Video package updated in order to show ads using the following property:
 
 * **adTagUrl** (Optional String): Set the doubleclick.net URL in this property.
+* **onAdStart** (Optional Event): When the ad video started.
+* **onAdComplete** (Optional Event): When all the ads were played.
+* **onAdError** (Optional Event): When there is an error while trying to play an ad.
+* **onAdPause** (Optional Event): When the user pauses the ad.
+* **onAdSkip** (Optional Event): When the user skips the ad.
 
 ## Installing
 
