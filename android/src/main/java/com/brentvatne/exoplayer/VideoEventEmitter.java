@@ -153,7 +153,11 @@ class VideoEventEmitter {
 
     void adComplete() { receiveEvent(EVENT_AD_COMPLETE, null);}
 
-    void adError() { receiveEvent(EVENT_AD_ERROR, null);}
+    void adError(String adErrorMessage) {
+        WritableMap event = Arguments.createMap();
+        event.putString("message", adErrorMessage);
+        receiveEvent(EVENT_AD_ERROR, event);
+    }
 
     void adPause() { receiveEvent(EVENT_AD_PAUSE, null);}
 

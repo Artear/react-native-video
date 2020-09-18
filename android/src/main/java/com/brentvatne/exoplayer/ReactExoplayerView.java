@@ -28,6 +28,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.ThemedReactContext;
+import com.google.ads.interactivemedia.v3.api.AdErrorEvent;
 import com.google.ads.interactivemedia.v3.api.AdEvent;
 import com.google.ads.interactivemedia.v3.api.AdsLoader;
 import com.google.ads.interactivemedia.v3.api.AdsManager;
@@ -1002,16 +1003,22 @@ class ReactExoplayerView extends FrameLayout implements
         adsLoader.getAdsLoader().addAdsLoadedListener(new AdsLoader.AdsLoadedListener() {
             @Override public void onAdsManagerLoaded(AdsManagerLoadedEvent adsManagerLoadedEvent) {
                 adsManager = adsManagerLoadedEvent.getAdsManager();
+                adsManager.addAdErrorListener(new AdErrorEvent.AdErrorListener() {
+                    @Override
+                    public void onAdError(AdErrorEvent adErrorEvent) {
+                        eventEmitter.adError(adErrorEvent.getError().getMessage());
+                    }
+                });
                 adsManager.addAdEventListener(new AdEvent.AdEventListener() {
                     @Override
                     public void onAdEvent(AdEvent adEvent) {
                         switch (adEvent.getType()) {
-                            case AD_BREAK_STARTED:
+                            case LOADED:
                             eventEmitter.adStart();
                             break;
 
                             case AD_BREAK_FETCH_ERROR:
-                            eventEmitter.adError();
+                            eventEmitter.adError("Error fetching ad break.");
                             break;
 
                             case PAUSED:

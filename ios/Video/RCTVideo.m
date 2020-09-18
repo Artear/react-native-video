@@ -812,6 +812,10 @@ static int const RCTVideoUnset = -1;
     if (self.onAdPause) {
       self.onAdPause(@{});
     }
+  } else if (event.type == kIMAAdEvent_AD_BREAK_FETCH_ERROR) {
+    if (self.onAdError) {
+      self.onAdError(@{@"message": @"Error fetching ad break."});
+    }
   }
 }
 
@@ -820,7 +824,7 @@ static int const RCTVideoUnset = -1;
   // content.
   NSLog(@"AdsManager error: %@", error.message);
     if (self.onAdError) {
-      self.onAdError(@{});
+      self.onAdError(@{@"message": error.message});
     }
     if (self.onAdComplete) {
       self.onAdComplete(@{});
@@ -830,6 +834,9 @@ static int const RCTVideoUnset = -1;
 
 - (void)adsManagerDidRequestContentPause:(IMAAdsManager *)adsManager {
   // The SDK is going to play ads, so pause the content.
+  if (self.onAdStart) {
+    self.onAdStart(@{});
+  }
   [_player pause];
 }
 
