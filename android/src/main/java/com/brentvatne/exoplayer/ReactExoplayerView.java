@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -39,6 +40,7 @@ import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.Format;
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
@@ -48,7 +50,9 @@ import com.google.android.exoplayer2.mediacodec.MediaCodecUtil;
 import com.google.android.exoplayer2.metadata.Metadata;
 import com.google.android.exoplayer2.metadata.MetadataOutput;
 import com.google.android.exoplayer2.source.BehindLiveWindowException;
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.MediaSourceFactory;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
@@ -69,6 +73,7 @@ import com.google.android.exoplayer2.upstream.BandwidthMeter;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultAllocator;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 import com.google.android.exoplayer2.util.Util;
 
@@ -405,6 +410,7 @@ class ReactExoplayerView extends FrameLayout implements
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                DefaultRenderersFactory renderersFactory = null;
                 if (player == null) {
                     TrackSelection.Factory videoTrackSelectionFactory = new AdaptiveTrackSelection.Factory();
                     trackSelector = new DefaultTrackSelector(videoTrackSelectionFactory);
@@ -418,26 +424,18 @@ class ReactExoplayerView extends FrameLayout implements
                     defaultLoadControlBuilder.setTargetBufferBytes(-1);
                     defaultLoadControlBuilder.setPrioritizeTimeOverSizeThresholds(true);
                     DefaultLoadControl defaultLoadControl = defaultLoadControlBuilder.createDefaultLoadControl();
-                    DefaultRenderersFactory renderersFactory =
+                    renderersFactory =
                             new DefaultRenderersFactory(getContext())
                                     .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF);
                     // TODO: Add drmSessionManager to 5th param from: https://github.com/react-native-community/react-native-video/pull/1445
-                    player = ExoPlayerFactory.newSimpleInstance(getContext(), renderersFactory,
-                            trackSelector, defaultLoadControl, null, bandwidthMeter);
-                    player.addListener(self);
-                    player.addMetadataOutput(self);
-                    adsLoader.setPlayer(player);
-                    exoPlayerView.setPlayer(player);
-                    audioBecomingNoisyReceiver.setListener(self);
-                    bandwidthMeter.addEventListener(new Handler(), self);
-                    setPlayWhenReady(!isPaused);
+                    //player = ExoPlayerFactory.newSimpleInstance(getContext(), renderersFactory,
+                    //        trackSelector, defaultLoadControl, null, bandwidthMeter);
                     playerNeedsSource = true;
 
-                    PlaybackParameters params = new PlaybackParameters(rate, 1f);
-                    player.setPlaybackParameters(params);
                 }
                 if (playerNeedsSource && srcUri != null) {
-                    exoPlayerView.invalidateAspectRatio();
+
+
 
                     ArrayList<MediaSource> mediaSourceList = buildTextSources();
                     MediaSource videoSource = buildMediaSource(srcUri, extension);
@@ -448,7 +446,7 @@ class ReactExoplayerView extends FrameLayout implements
                     } else {
                         mediaSourceList.add(0, mediaSourceWithAds);
                         MediaSource[] textSourceArray = mediaSourceList.toArray(
-                                new MediaSource[mediaSourceList.size()]
+                            new MediaSource[mediaSourceList.size()]
                         );
                         mediaSource = new MergingMediaSource(textSourceArray);
                     }
@@ -457,6 +455,31 @@ class ReactExoplayerView extends FrameLayout implements
                     if (haveResumePosition) {
                         player.seekTo(resumeWindow, resumePosition);
                     }
+
+
+
+                    DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(getContext(), "player");
+
+                    ProgressiveMediaSource.Factory mediaSourceFactory = new ProgressiveMediaSource.Factory(dataSourceFactory);
+
+                    player =
+                        new SimpleExoPlayer.Builder(getContext(), renderersFactory)
+                            .setMediaSourceFactory(mediaSourceFactory)
+                            .setBandwidthMeter(bandwidthMeter)
+                            .setTrackSelector(trackSelector)
+                            .build();
+                    player.addListener(self);
+                    player.addMetadataOutput(self);
+                    adsLoader.setPlayer(player);
+                    exoPlayerView.setPlayer(player);
+                    audioBecomingNoisyReceiver.setListener(self);
+                    bandwidthMeter.addEventListener(new Handler(), self);
+                    setPlayWhenReady(!isPaused);
+                    PlaybackParameters params = new PlaybackParameters(rate, 1f);
+                    player.setPlaybackParameters(params);
+
+                    exoPlayerView.invalidateAspectRatio();
+
                     player.prepare(mediaSource, !haveResumePosition, false);
                     playerNeedsSource = false;
 
@@ -468,6 +491,8 @@ class ReactExoplayerView extends FrameLayout implements
                 initializePlayerControl();
                 setControls(controls);
                 applyModifiers();
+
+                setAdsLoaderListeners();
             }
         }, 1);
     }
@@ -998,56 +1023,70 @@ class ReactExoplayerView extends FrameLayout implements
     public void setAdTagUrl(final Uri uri) {
         adTagUrl = uri;
         adsLoader = new ImaAdsLoader(this.themedReactContext, adTagUrl);
-        adsLoader.getAdsLoader().addAdsLoadedListener(new AdsLoader.AdsLoadedListener() {
-            @Override public void onAdsManagerLoaded(AdsManagerLoadedEvent adsManagerLoadedEvent) {
-                adsManager = adsManagerLoadedEvent.getAdsManager();
-                adsManager.addAdErrorListener(new AdErrorEvent.AdErrorListener() {
-                    @Override
-                    public void onAdError(AdErrorEvent adErrorEvent) {
-                        eventEmitter.adError(adErrorEvent.getError().getMessage());
-                    }
-                });
-                adsManager.addAdEventListener(new AdEvent.AdEventListener() {
-                    @Override
-                    public void onAdEvent(AdEvent adEvent) {
-                        switch (adEvent.getType()) {
-                            case LOADED:
-                            eventEmitter.adStart();
-                            break;
+        //adsLoader = new ImaAdsLoader.Builder(this.themedReactContext).build();
+    }
 
-                            case AD_BREAK_FETCH_ERROR:
-                            eventEmitter.adError("Error fetching ad break.");
-                            eventEmitter.adComplete();
-                            break;
-
-                            case AD_BREAK_ENDED:
-                            eventEmitter.adComplete();
-                            break;
-
-                            case AD_PERIOD_ENDED:
-                            eventEmitter.adComplete();
-                            break;
-
-                            case PAUSED:
-                            eventEmitter.adPause();
-                            break;
-
-                            case SKIPPED:
-                            eventEmitter.adSkip();
-                            break;
-
-                            case CONTENT_PAUSE_REQUESTED:
-                            eventEmitter.adStart();
-                            break;
-
-                            case CONTENT_RESUME_REQUESTED:
-                            eventEmitter.adComplete();
-                            break;
+    public void setAdsLoaderListeners() {
+        try {
+            adsLoader.getAdsLoader().addAdsLoadedListener(new AdsLoader.AdsLoadedListener() {
+                @Override public void onAdsManagerLoaded(AdsManagerLoadedEvent adsManagerLoadedEvent) {
+                    adsManager = adsManagerLoadedEvent.getAdsManager();
+                    adsManager.addAdErrorListener(new AdErrorEvent.AdErrorListener() {
+                        @Override
+                        public void onAdError(AdErrorEvent adErrorEvent) {
+                            eventEmitter.adError(adErrorEvent.getError().getMessage());
                         }
-                    }
-                });
-            };
-        });
+                    });
+                    adsManager.addAdEventListener(new AdEvent.AdEventListener() {
+                        @Override
+                        public void onAdEvent(AdEvent adEvent) {
+                            switch (adEvent.getType()) {
+                                case LOADED:
+                                    eventEmitter.adStart();
+                                    break;
+
+                                case AD_BREAK_FETCH_ERROR:
+                                    eventEmitter.adError("Error fetching ad break.");
+                                    eventEmitter.adComplete();
+                                    break;
+
+                                case AD_BREAK_ENDED:
+                                    eventEmitter.adComplete();
+                                    break;
+
+                                case AD_PERIOD_ENDED:
+                                    eventEmitter.adComplete();
+                                    break;
+
+                                case PAUSED:
+                                    eventEmitter.adPause();
+                                    break;
+
+                                case SKIPPED:
+                                    eventEmitter.adSkip();
+                                    break;
+
+                                case CONTENT_PAUSE_REQUESTED:
+                                    eventEmitter.adStart();
+                                    break;
+
+                                case CONTENT_RESUME_REQUESTED:
+                                    eventEmitter.adComplete();
+                                    break;
+                            }
+                        }
+                    });
+                };
+            });
+        }
+        catch(Exception e) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setAdsLoaderListeners();
+                }
+            }, 1);
+        }
     }
 
     public void setRawSrc(final Uri uri, final String extension) {
