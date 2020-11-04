@@ -1017,6 +1017,15 @@ class ReactExoplayerView extends FrameLayout implements
 
                             case AD_BREAK_FETCH_ERROR:
                             eventEmitter.adError("Error fetching ad break.");
+                            eventEmitter.adComplete();
+                            break;
+
+                            case AD_BREAK_ENDED:
+                            eventEmitter.adComplete();
+                            break;
+
+                            case AD_PERIOD_ENDED:
+                            eventEmitter.adComplete();
                             break;
 
                             case PAUSED:
