@@ -1,4 +1,4 @@
-## react-native-video with ads
+## react-native-video with ADS
 
 React Native Video package updated in order to show ads using the following properties:
 
