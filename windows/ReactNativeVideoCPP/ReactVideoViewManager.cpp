@@ -64,28 +64,28 @@ void ReactVideoViewManager::UpdateProperties(
       auto const &propertyValue = pair.second;
       if (!propertyValue.IsNull()) {
         if (propertyName == "src") {
-            auto const &srcMap = propertyValue.AsObject();
+            auto const &srcMap = propertyValue.Object();
             auto const &uri = srcMap.at("uri");
-            reactVideoView.Set_UriString(to_hstring(uri.AsString()));
+            reactVideoView.Set_UriString(to_hstring(uri.String()));
         } else if (propertyName == "resizeMode") {
-            reactVideoView.Stretch(static_cast<Stretch>(std::stoul(propertyValue.AsString())));
+            reactVideoView.Stretch(static_cast<Stretch>(std::stoul(propertyValue.String())));
         } else if (propertyName == "repeat") {
-            reactVideoView.Set_IsLoopingEnabled(propertyValue.AsBoolean());
+            reactVideoView.Set_IsLoopingEnabled(propertyValue.Boolean());
         } else if (propertyName == "paused") {
-            m_paused = propertyValue.AsBoolean();
+            m_paused = propertyValue.Boolean();
             reactVideoView.Set_Paused(m_paused);
         } else if (propertyName == "muted") {
-            reactVideoView.Set_Muted(propertyValue.AsBoolean());
+            reactVideoView.Set_Muted(propertyValue.Boolean());
         } else if (propertyName == "volume") {
-            reactVideoView.Set_Volume(propertyValue.AsDouble());
+            reactVideoView.Set_Volume(propertyValue.Double());
         } else if (propertyName == "seek") {
-            reactVideoView.Set_Position(propertyValue.AsDouble());
+            reactVideoView.Set_Position(propertyValue.Double());
         } else if (propertyName == "controls") {
-            reactVideoView.Set_Controls(propertyValue.AsBoolean());
+            reactVideoView.Set_Controls(propertyValue.Boolean());
         } else if (propertyName == "fullscreen") {
-            reactVideoView.Set_FullScreen(propertyValue.AsBoolean());
+            reactVideoView.Set_FullScreen(propertyValue.Boolean());
         } else if (propertyName == "progressUpdateInterval") {
-            reactVideoView.Set_ProgressUpdateInterval(propertyValue.AsInt64());
+            reactVideoView.Set_ProgressUpdateInterval(propertyValue.Int64());
         }
       }
     }
