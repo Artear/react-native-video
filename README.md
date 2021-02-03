@@ -1,4 +1,4 @@
-## react-native-video with ads
+## react-native-video with ADS
 
 A `<Video>` component for react-native, as seen in
 [react-native-login](https://github.com/brentvatne/react-native-login)!
