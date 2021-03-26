@@ -720,7 +720,7 @@ static int const RCTVideoUnset = -1;
       self.onVideoBuffer(@{@"isBuffering": @(YES), @"target": self.reactTag});
     } else if ([keyPath isEqualToString:playbackLikelyToKeepUpKeyPath]) {
       // Continue playing (or not if paused) after being paused due to hitting an unbuffered zone.
-      if ((!(_controls || _fullscreenPlayerPresented) || _playerBufferEmpty) && _playerItem.playbackLikelyToKeepUp) {
+      if ((!(_fullscreenPlayerPresented) || _playerBufferEmpty) && _playerItem.playbackLikelyToKeepUp) {
         [self setPaused:_paused];
       }
       _playerBufferEmpty = NO;
@@ -958,14 +958,7 @@ static int const RCTVideoUnset = -1;
 
 - (void)setResizeMode:(NSString*)mode
 {
-  if( _controls )
-  {
-    _playerViewController.videoGravity = mode;
-  }
-  else
-  {
-    _playerLayer.videoGravity = mode;
-  }
+  _playerViewController.videoGravity = mode;
   _resizeMode = mode;
 }
 
@@ -1180,9 +1173,6 @@ static int const RCTVideoUnset = -1;
 - (void)applyModifiers
 {
   if (_muted) {
-    if (!_controls) {
-      [_player setVolume:0];
-    }
     [_player setMuted:YES];
   } else {
     [_player setVolume:_volume];
@@ -1517,12 +1507,14 @@ static int const RCTVideoUnset = -1;
     // resize mode must be set before subview is added
     [self setResizeMode:_resizeMode];
     
-    if (_controls) {
-      UIViewController *viewController = [self reactViewController];
-      [viewController addChildViewController:_playerViewController];
-      [self addSubview:_playerViewController.view];
+    UIViewController *viewController = [self reactViewController];
+    [viewController addChildViewController:_playerViewController];
+    [self addSubview:_playerViewController.view];
+
+    if (!_controls) {
+       _playerViewController.showsPlaybackControls = false;
     }
-      
+
     [_playerViewController addObserver:self forKeyPath:readyForDisplayKeyPath options:NSKeyValueObservingOptionNew context:nil];
     
     [_playerViewController.contentOverlayView addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];
@@ -1553,20 +1545,11 @@ static int const RCTVideoUnset = -1;
 
 - (void)setControls:(BOOL)controls
 {
-  if( _controls != controls || (!_playerLayer && !_playerViewController) )
+  if(!_playerLayer && !_playerViewController)
   {
     _controls = controls;
-    if( _controls )
-    {
-      [self removePlayerLayer];
-      [self usePlayerViewController];
-    }
-    else
-    {
-      [_playerViewController.view removeFromSuperview];
-      _playerViewController = nil;
-      [self usePlayerLayer];
-    }
+    [self removePlayerLayer];
+    [self usePlayerViewController];
   }
 }
 
@@ -1664,55 +1647,27 @@ static int const RCTVideoUnset = -1;
 {
   // We are early in the game and somebody wants to set a subview.
   // That can only be in the context of playerViewController.
-  if( !_controls && !_playerLayer && !_playerViewController )
-  {
     [self setControls:true];
-  }
-  
-  if( _controls )
-  {
     view.frame = self.bounds;
     [_playerViewController.contentOverlayView insertSubview:view atIndex:atIndex];
-  }
-  else
-  {
-    RCTLogError(@"video cannot have any subviews");
-  }
   return;
 }
 
 - (void)removeReactSubview:(UIView *)subview
 {
-  if( _controls )
-  {
-    [subview removeFromSuperview];
-  }
-  else
-  {
-    RCTLogError(@"video cannot have any subviews");
-  }
+  [subview removeFromSuperview];
   return;
 }
 
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  if( _controls )
-  {
     _playerViewController.view.frame = self.bounds;
     
     // also adjust all subviews of contentOverlayView
     for (UIView* subview in _playerViewController.contentOverlayView.subviews) {
       subview.frame = self.bounds;
     }
-  }
-  else
-  {
-    [CATransaction begin];
-    [CATransaction setAnimationDuration:0];
-    _playerLayer.frame = self.bounds;
-    [CATransaction commit];
-  }
 }
 
 #pragma mark - Lifecycle
