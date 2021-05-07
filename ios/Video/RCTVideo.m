@@ -515,6 +515,18 @@ static int const RCTVideoUnset = -1;
     return;
   }
   
+  NSURLRequest *urlChecker = [NSURLRequest requestWithURL:[NSURL URLWithString:uri]];
+  bool urlIsValid = [NSURLConnection canHandleRequest:urlChecker];    
+  if (!urlIsValid) {
+      self.onVideoError(@{@"error": @{@"code": [NSNumber numberWithInteger: -1],
+                                      @"localizedDescription": @"-1",
+                                      @"localizedFailureReason": @"-1",
+                                      @"localizedRecoverySuggestion": @"-1",
+                                      @"domain": @"-1"},
+                          @"target": self.reactTag});
+      return;
+  }
+    
   NSURL *url = isNetwork || isAsset
     ? [NSURL URLWithString:uri]
     : [[NSURL alloc] initFileURLWithPath:[[NSBundle mainBundle] pathForResource:uri ofType:type]];
