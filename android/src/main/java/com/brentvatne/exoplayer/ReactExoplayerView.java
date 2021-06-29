@@ -177,6 +177,9 @@ class ReactExoplayerView extends FrameLayout implements
     private final AudioManager audioManager;
     private final AudioBecomingNoisyReceiver audioBecomingNoisyReceiver;
 
+    final Handler adsProgressHandler = new Handler();
+    private long adsProgressTimer = 0;
+
     private final Handler progressHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -1064,6 +1067,8 @@ class ReactExoplayerView extends FrameLayout implements
                     @Override
                     public void onAdError(AdErrorEvent adErrorEvent) {
                         eventEmitter.adError(adErrorEvent.getError().getMessage());
+                        eventEmitter.adComplete();
+                        adsProgressHandler.removeCallbacksAndMessages(null);
                     }
                 });
                 adsManager.addAdEventListener(new AdEvent.AdEventListener() {
@@ -1072,19 +1077,28 @@ class ReactExoplayerView extends FrameLayout implements
                         switch (adEvent.getType()) {
                             case LOADED:
                             eventEmitter.adStart();
+                            adsProgressTimer = 0;
+                            adsProgressHandler.removeCallbacksAndMessages(null);
+                            runAdsChecker();
                             break;
 
                             case AD_BREAK_FETCH_ERROR:
                             eventEmitter.adError("Error fetching ad break.");
                             eventEmitter.adComplete();
+                            adsProgressHandler.removeCallbacksAndMessages(null);
                             break;
 
                             case AD_BREAK_ENDED:
                             eventEmitter.adComplete();
                             break;
 
+                            case AD_PROGRESS:
+                            adsProgressTimer = getTimestamp();
+                            break;
+
                             case AD_PERIOD_ENDED:
                             eventEmitter.adComplete();
+                            adsProgressHandler.removeCallbacksAndMessages(null);
                             break;
 
                             case PAUSED:
@@ -1101,6 +1115,7 @@ class ReactExoplayerView extends FrameLayout implements
 
                             case CONTENT_RESUME_REQUESTED:
                             eventEmitter.adComplete();
+                            adsProgressHandler.removeCallbacksAndMessages(null);
                             break;
                         }
                     }
@@ -1460,5 +1475,26 @@ class ReactExoplayerView extends FrameLayout implements
         }
         catch(Exception e) {
         }
+    }
+
+    public long getTimestamp() {
+        Long tsLong = System.currentTimeMillis()/1000;
+        return tsLong;
+    }
+
+    public void runAdsChecker() {
+        final int delay = 3000;
+
+        adsProgressHandler.postDelayed(new Runnable() {
+            public void run() {
+                if (adsProgressTimer<getTimestamp()-3) {
+                    try {
+                        adsManager.discardAdBreak();
+                    } catch(Exception e) {
+                    }
+                }
+                adsProgressHandler.postDelayed(this, delay);
+            }
+        }, delay);
     }
 }
