@@ -663,9 +663,11 @@ class ReactExoplayerView extends FrameLayout implements
     }
 
     private void onStopPlayback() {
+        /*
         if (isFullscreen) {
             setFullscreen(false);
         }
+        */
         audioManager.abandonAudioFocus(this);
     }
 
